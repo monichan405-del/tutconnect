@@ -1,35 +1,15 @@
 ====================================================
   TutorConnect — Local Network Platform
-  Owner & Admin: Monisha S
   Version: 1.0
 ====================================================
 
-WHAT IS THIS?
+summary
 ─────────────
 TutorConnect is a local network tutor booking platform.
 Students nearby can find tutors, book sessions, and ask
 study questions. Tutors earn side income. Parents can
 monitor their child's sessions. Monisha S has full admin
 control over everything.
-
-
-HOW TO START
-────────────
-1. Make sure Node.js is installed (https://nodejs.org)
-
-2. On WINDOWS:
-   Double-click START_WINDOWS.bat
-
-   On MAC / LINUX:
-   Open Terminal in this folder and run:
-     chmod +x START_MAC_LINUX.sh
-     ./START_MAC_LINUX.sh
-
-3. The server will show your local IP address, e.g.:
-   http://192.168.1.5:3000
-
-4. Share that IP with students/parents on the same WiFi.
-   Anyone on the same network can open the app in their browser.
 
 
 HOW TO ACCESS FROM OTHER DEVICES (Same WiFi)
@@ -44,17 +24,7 @@ HOW TO ACCESS FROM OTHER DEVICES (Same WiFi)
 PAGES
 ─────
 /            → Browse tutors, search, book sessions
-/dashboard   → Students track their bookings & questions
-/admin       → Admin panel (Monisha S only — password required)
-
-
-ADMIN LOGIN
-───────────
-URL:      http://localhost:3000/admin
-Password: monisha2025
-
-⚠️  IMPORTANT: Change your password after first login!
-    Go to Admin → Settings → Change admin password
+/dashboard   → Students track their bookings & question.
 
 
 PRICING STRUCTURE
@@ -64,7 +34,7 @@ Mid-range (board exams):        ₹150 – ₹500/hr
 Premium (JEE/NEET/FAANG):       ₹500 – ₹1000/hr
 
 
-ADMIN CAPABILITIES (Monisha S only)
+ADMIN CAPABILITIES :
 ────────────────────────────────────
 ✓ View and manage ALL bookings (accept/decline/add notes)
 ✓ Reply to student questions
