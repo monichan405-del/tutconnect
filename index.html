@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TutorConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f8f7f4;
+    --surface:#ffffff;
+    --border:#e8e5df;
+    --text:#1a1916;
+    --muted:#7a7670;
+    --accent:#2d6a4f;
+    --accent-light:#e8f5ee;
+    --accent-hover:#1e5c3d;
+    --warn:#c7521a;
+    --warn-light:#fdf0e8;
+    --info:#1a4d7a;
+    --info-light:#e8f0fa;
+    --tag-bg:#f0ede8;
+    --sans:'DM Sans',sans-serif;
+    --serif:'DM Serif Display',serif;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+
+  /* NAV */
+  nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+  .logo{font-family:var(--serif);font-size:1.4rem;letter-spacing:-0.02em;color:var(--text)}
+  .logo span{color:var(--accent)}
+  .nav-links{display:flex;gap:0.25rem;align-items:center}
+  .nav-btn{padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;transition:all 0.15s;background:transparent;color:var(--muted)}
+  .nav-btn:hover{background:var(--tag-bg);color:var(--text)}
+  .nav-btn.primary{background:var(--accent);color:#fff;margin-left:8px}
+  .nav-btn.primary:hover{background:var(--accent-hover)}
+  .nav-role{display:flex;align-items:center;gap:8px}
+  .role-pill{background:var(--tag-bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--muted);display:flex;gap:6px}
+  .role-pill button{border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);padding:2px 6px;border-radius:12px;transition:all 0.15s;font-family:var(--sans)}
+  .role-pill button.active{background:var(--accent);color:#fff}
+
+  /* PAGES */
+  .page{display:none;padding:2rem;max-width:1100px;margin:0 auto}
+  .page.active{display:block}
+
+  /* HERO */
+  .hero{text-align:center;padding:3.5rem 1rem 2.5rem}
+  .hero h1{font-family:var(--serif);font-size:2.8rem;line-height:1.15;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.75rem}
+  .hero h1 em{color:var(--accent);font-style:italic}
+  .hero p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto 2rem}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  /* SEARCH BAR */
+  .search-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:12px;padding:10px 16px;max-width:540px;margin:0 auto 2.5rem;box-shadow:0 2px 12px rgba(0,0,0,0.05)}
+  .search-bar input{border:none;outline:none;font-family:var(--sans);font-size:14px;flex:1;background:transparent;color:var(--text)}
+  .search-bar input::placeholder{color:var(--muted)}
+  .search-bar select{border:none;outline:none;font-family:var(--sans);font-size:13px;color:var(--muted);background:transparent;cursor:pointer}
+  .search-bar button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap;transition:background 0.15s}
+  .search-bar button:hover{background:var(--accent-hover)}
+
+  /* FILTERS */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+  .filter-btn{border:1px solid var(--border);background:var(--surface);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);font-family:var(--sans);transition:all 0.15s}
+  .filter-btn:hover,.filter-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+
+  /* TUTOR GRID */
+  .tutor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem}
+  .tutor-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.18s;position:relative}
+  .tutor-card:hover{border-color:#c5d9cf;box-shadow:0 4px 16px rgba(45,106,79,0.08);transform:translateY(-1px)}
+  .tutor-header{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+  .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;flex-shrink:0;font-family:var(--serif)}
+  .tutor-name{font-weight:600;font-size:15px;margin-bottom:2px}
+  .tutor-sub{font-size:12px;color:var(--muted)}
+  .tutor-subjects{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .tag{background:var(--tag-bg);color:var(--muted);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500}
+  .tutor-meta{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)}
+  .rating{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+  .rating strong{color:var(--text)}
+  .price{font-size:14px;font-weight:600;color:var(--accent)}
+  .price span{font-weight:400;font-size:11px;color:var(--muted)}
+  .avail-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+  .avail-dot.available{background:#34a853}
+  .avail-dot.busy{background:#fbb800}
+  .avail-label{font-size:11px;color:var(--muted)}
+  .badge-featured{position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:600;border-radius:4px;padding:2px 7px;letter-spacing:0.05em;text-transform:uppercase}
+
+  /* TUTOR DETAIL */
+  .detail-back{border:none;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:1.5rem;padding:0}
+  .detail-back:hover{color:var(--text)}
+  .detail-top{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
+  .detail-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+  .detail-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:24px;margin-bottom:1rem;font-family:var(--serif)}
+  .detail-name{font-family:var(--serif);font-size:1.6rem;margin-bottom:4px}
+  .detail-role{font-size:13px;color:var(--muted);margin-bottom:12px}
+  .stats-row{display:flex;gap:1.5rem;margin:1rem 0;flex-wrap:wrap}
+  .stat{text-align:left}
+  .stat-val{font-size:1.3rem;font-weight:600;display:block}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+  .section-title{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;margin-top:1.25rem}
+  .about-text{font-size:14px;color:var(--muted);line-height:1.7}
+  .reviews-list{display:flex;flex-direction:column;gap:12px;margin-top:0.75rem}
+  .review-item{background:var(--tag-bg);border-radius:10px;padding:12px;font-size:13px}
+  .review-author{font-weight:500;margin-bottom:3px}
+  .review-text{color:var(--muted)}
+
+  /* BOOKING PANEL */
+  .booking-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;position:sticky;top:76px}
+  .booking-panel h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:1rem}
+  .time-slots{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:1rem}
+  .slot{border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all 0.15s;background:var(--surface)}
+  .slot:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+  .slot.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+  .slot.taken{opacity:0.4;cursor:not-allowed;text-decoration:line-through}
+  .date-tabs{display:flex;gap:5px;margin-bottom:0.75rem;overflow-x:auto}
+  .date-tab{padding:6px 12px;border-radius:7px;border:1px solid var(--border);font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap;transition:all 0.15s;background:var(--surface);color:var(--muted);font-family:var(--sans)}
+  .date-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .book-form input,.book-form textarea,.book-form select{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--text);background:var(--surface);margin-bottom:8px;outline:none;transition:border 0.15s;resize:vertical}
+  .book-form input:focus,.book-form textarea:focus{border-color:var(--accent)}
+  .book-form label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+  .btn-full{width:100%;padding:11px;border:none;border-radius:9px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{background:var(--accent-hover)}
+  .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--muted);margin-top:6px}
+  .btn-outline:hover{border-color:var(--text);color:var(--text)}
+  .referral-box{background:var(--accent-light);border:1px solid #b5d9c8;border-radius:10px;padding:12px;margin-top:12px;font-size:12px}
+  .referral-box strong{color:var(--accent);display:block;margin-bottom:4px}
+  .referral-code{font-family:monospace;font-size:13px;background:#fff;border-radius:5px;padding:4px 10px;display:inline-block;border:1px dashed #b5d9c8;margin-top:4px;letter-spacing:0.08em;cursor:pointer;color:var(--accent)}
+
+  /* DASHBOARD (tutor view) */
+  .dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem;flex-wrap:wrap;gap:12px}
+  .dash-title{font-family:var(--serif);font-size:1.8rem}
+  .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+  .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem}
+  .metric-val{font-size:1.6rem;font-weight:600;display:block;margin-bottom:2px}
+  .metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+  .requests-list{display:flex;flex-direction:column;gap:12px}
+  .request-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .req-info{flex:1;min-width:180px}
+  .req-student{font-weight:600;font-size:14px;margin-bottom:2px}
+  .req-meta{font-size:12px;color:var(--muted)}
+  .req-subject{background:var(--tag-bg);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500;color:var(--muted)}
+  .req-time{font-size:12px;color:var(--info);font-weight:500;margin-left:auto}
+  .req-actions{display:flex;gap:7px;margin-left:auto}
+  .btn-accept{background:var(--accent-light);color:var(--accent);border:1.5px solid #b5d9c8;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
+  .btn-accept:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-decline{background:var(--warn-light);color:var(--warn);border:1.5px solid #f0c8a8;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
+  .btn-decline:hover{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .status-badge{border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600}
+  .status-badge.accepted{background:var(--accent-light);color:var(--accent)}
+  .status-badge.declined{background:var(--warn-light);color:var(--warn)}
+  .status-badge.pending{background:#fdf5e0;color:#9a6c00}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+  .section-header h2{font-family:var(--serif);font-size:1.2rem}
+  .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+  .empty-state svg{margin-bottom:12px;opacity:0.3}
+  .empty-state p{font-size:14px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+  .cal-day{background:var(--tag-bg);border-radius:7px;padding:8px 4px;text-align:center;font-size:12px;color:var(--muted)}
+  .cal-day.has-session{background:var(--accent-light);color:var(--accent);font-weight:600;cursor:pointer}
+  .cal-day.today{border:2px solid var(--accent)}
+  .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.25s;pointer-events:none}
+  .toast.show{opacity:1}
+  .divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+  @media(max-width:700px){
+    .detail-top{grid-template-columns:1fr}
+    .metrics-row{grid-template-columns:1fr 1fr}
+    .booking-panel{position:static}
+    nav{padding:0 1rem}
+    .page{padding:1rem}
+    .hero h1{font-size:2rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Tutor<span>Connect</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div class="role-pill">
+      <button class="active" id="roleStudent" onclick="setRole('student')">Student</button>
+      <button id="roleTutor" onclick="setRole('tutor')">Tutor</button>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="showPage('home')">Browse</button>
+      <button class="nav-btn" onclick="showPage('dashboard')">Dashboard</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1>Find your perfect<br><em>learning match</em></h1>
+    <p>Connect with expert tutors, book sessions instantly, and learn at your own pace.</p>
+  </div>
+
+  <div class="search-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search by subject, name, or keyword…" oninput="filterTutors()">
+    <select id="subjectFilter" onchange="filterTutors()">
+      <option value="">All subjects</option>
+      <option>Mathematics</option>
+      <option>Physics</option>
+      <option>Chemistry</option>
+      <option>Biology</option>
+      <option>English</option>
+      <option>Computer Science</option>
+      <option>History</option>
+      <option>Economics</option>
+    </select>
+    <button onclick="filterTutors()">Search</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter(this,'all')">All tutors</button>
+    <button class="filter-btn" onclick="setFilter(this,'available')">Available now</button>
+    <button class="filter-btn" onclick="setFilter(this,'top')">Top rated</button>
+    <button class="filter-btn" onclick="setFilter(this,'affordable')">Budget friendly</button>
+    <button class="filter-btn" onclick="setFilter(this,'premium')">Premium</button>
+  </div>
+
+  <div class="tutor-grid" id="tutorGrid"></div>
+</div>
+
+<!-- TUTOR DETAIL PAGE -->
+<div class="page" id="page-detail">
+  <button class="detail-back" onclick="showPage('home')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to tutors
+  </button>
+  <div class="detail-top">
+    <div>
+      <div class="detail-card" style="margin-bottom:1.25rem">
+        <div id="detailAvatar" class="detail-avatar"></div>
+        <div id="detailName" class="detail-name"></div>
+        <div id="detailRole" class="detail-role"></div>
+        <div id="detailSubjects" class="tutor-subjects" style="margin-bottom:0"></div>
+        <div class="stats-row" id="detailStats"></div>
+      </div>
+      <div class="detail-card" style="margin-bottom:1.25rem">
+        <div class="section-title">About</div>
+        <div id="detailAbout" class="about-text"></div>
+        <div class="section-title" style="margin-top:1.25rem">Teaching approach</div>
+        <div id="detailApproach" class="about-text"></div>
+      </div>
+      <div class="detail-card">
+        <div class="section-title">Student reviews</div>
+        <div id="detailReviews" class="reviews-list"></div>
+      </div>
+    </div>
+    <div>
+      <div class="booking-panel">
+        <h3>Book a session</h3>
+        <div class="section-title" style="margin-top:0">Choose a date</div>
+        <div class="date-tabs" id="dateTabs"></div>
+        <div class="section-title">Choose a time slot</div>
+        <div class="time-slots" id="timeSlots"></div>
+        <hr class="divider" style="margin:1rem 0">
+        <div class="book-form" id="bookForm">
+          <label>Your name</label>
+          <input type="text" id="bookName" placeholder="Full name">
+          <label>Email</label>
+          <input type="email" id="bookEmail" placeholder="your@email.com">
+          <label>Session topic / notes</label>
+          <textarea id="bookNotes" rows="3" placeholder="What do you need help with?"></textarea>
+          <label>Referral code (optional)</label>
+          <input type="text" id="bookReferral" placeholder="e.g. TC-REF2024">
+        </div>
+        <button class="btn-full btn-accent" onclick="bookSession()">Request booking</button>
+        <button class="btn-full btn-outline" onclick="showPage('home')">Cancel</button>
+        <div class="referral-box">
+          <strong>🎁 Refer &amp; Save</strong>
+          Share your code and both get 15% off next session.
+          <div class="referral-code" onclick="copyRef()" id="myRefCode">TC-ABC123</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title" id="dashTitle">Dashboard</div>
+      <div style="font-size:13px;color:var(--muted)" id="dashSub">Manage your sessions</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="nav-btn" style="border:1.5px solid var(--border);border-radius:8px" onclick="showPage('home')">Browse tutors</button>
+    </div>
+  </div>
+
+  <!-- Tutor metrics (hidden in student mode) -->
+  <div class="metrics-row" id="tutorMetrics">
+    <div class="metric-card">
+      <span class="metric-val" style="color:var(--accent)">12</span>
+      <span class="metric-label">Pending requests</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-val">48</span>
+      <span class="metric-label">Sessions this month</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-val" style="color:#1a6b3e">₹57,600</span>
+      <span class="metric-label">Earnings this month</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-val">4.9 ★</span>
+      <span class="metric-label">Average rating</span>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2 id="requestsTitle">Incoming requests</h2>
+    <span id="requestCount" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+  <div class="requests-list" id="requestsList"></div>
+
+  <hr class="divider">
+
+  <div class="section-header" style="margin-top:0">
+    <h2>Upcoming sessions</h2>
+    <span style="font-size:12px;color:var(--muted)">This week</span>
+  </div>
+  <div class="requests-list" id="upcomingList"></div>
+
+  <hr class="divider">
+
+  <div class="section-header">
+    <h2>Calendar overview</h2>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:8px;text-align:center">
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Mon</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Tue</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Wed</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Thu</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Fri</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Sat</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600">Sun</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TUTORS=[
+  {id:1,name:"Dr. Ananya Kapoor",role:"IIT Delhi · 8 yrs exp",subjects:["Mathematics","Physics","JEE"],rating:4.9,reviews:142,price:800,available:true,featured:true,avatar:"AK",color:"#d4edda",acolor:"#2d6a4f",
+   about:"Ph.D. in Applied Mathematics from IIT Delhi. I specialize in JEE Advanced preparation and have helped over 200 students crack top-100 ranks.",
+   approach:"I believe in building strong fundamentals before tackling advanced problems. My sessions are interactive and concept-driven.",
+   studentReviews:[{author:"Rahul M.",text:"Cleared JEE with AIR 87. Dr. Kapoor's methodology is exceptional."},
+    {author:"Shreya T.",text:"Finally understood integration after struggling for months. Highly recommend!"}]},
+  {id:2,name:"Prof. Ravi Nair",role:"Former CBSE Examiner · 15 yrs",subjects:["Chemistry","Biology","NEET"],rating:4.8,reviews:89,price:700,available:true,featured:false,avatar:"RN",color:"#d4e8fa",acolor:"#1a4d7a",
+   about:"Retired CBSE board examiner with 15 years of teaching experience in Chemistry and Biology for NEET aspirants.",
+   approach:"Pattern-based learning. I analyze past question papers and create targeted practice sessions that map exactly to exam patterns.",
+   studentReviews:[{author:"Aisha K.",text:"Got 680/720 in NEET. Prof. Nair's organic chemistry sessions were gold."},
+    {author:"Vikram P.",text:"Clear explanations and perfect exam strategy. Worth every rupee."}]},
+  {id:3,name:"Ms. Priya Menon",role:"Cambridge Certified · English Expert",subjects:["English","Creative Writing","IELTS"],rating:4.7,reviews:56,price:500,available:false,featured:false,avatar:"PM",color:"#fce4d4",acolor:"#993c1d",
+   about:"Cambridge CELTA certified English teacher specialising in academic writing, IELTS preparation, and business communication.",
+   approach:"Communication-first teaching. We speak, write, and think in English throughout every session.",
+   studentReviews:[{author:"Tanvi R.",text:"Went from Band 6 to Band 8 in IELTS in just 3 months!"},
+    {author:"Arjun S.",text:"My essays transformed completely. She teaches you how to think in English."}]},
+  {id:4,name:"Mr. Karan Mehta",role:"FAANG Engineer · CS Tutor",subjects:["Computer Science","DSA","Python"],rating:4.9,reviews:201,price:1200,available:true,featured:true,avatar:"KM",color:"#e8d4fa",acolor:"#533ab7",
+   about:"Software Engineer at Google, teaching DSA and competitive programming on the side. Helped 50+ students crack FAANG interviews.",
+   approach:"LeetCode-first approach. We solve real interview problems from day one, building pattern recognition and optimal thinking.",
+   studentReviews:[{author:"Neha B.",text:"Got offers from Amazon and Microsoft. Karan's mock interviews were harder than the real ones!"},
+    {author:"Suraj D.",text:"Best DSA tutor on the platform. Explains the 'why' behind every approach."}]},
+  {id:5,name:"Mrs. Deepa Iyer",role:"MA Economics · University Rank",subjects:["Economics","Commerce","CA Foundation"],rating:4.6,reviews:34,price:450,available:true,featured:false,avatar:"DI",color:"#faeacd",acolor:"#854f0b",
+   about:"MA in Economics with distinction. I teach commerce and economics for Class 11-12 and CA Foundation students.",
+   approach:"Story-based learning — economics is just about people and choices. I make it relatable and fun.",
+   studentReviews:[{author:"Kartik P.",text:"Scored 98/100 in Economics boards. Deepa Ma'am makes everything crystal clear."},
+    {author:"Riya J.",text:"Finally understand micro and macro! She connects theory to real-world beautifully."}]},
+  {id:6,name:"Dr. Sanjay Rao",role:"Historian · DU Professor",subjects:["History","Political Science","Civics"],rating:4.5,reviews:22,price:400,available:false,featured:false,avatar:"SR",color:"#dae4c8",acolor:"#3b6d11",
+   about:"Associate Professor at Delhi University. Teaching History and Political Science for UPSC and board examinations.",
+   approach:"Narrative-driven sessions. History is a story, not a list of dates. We focus on cause-effect and contemporary relevance.",
+   studentReviews:[{author:"Ankit L.",text:"Cleared UPSC prelims first attempt. Dr. Rao's notes are legendary."},
+    {author:"Mira B.",text:"Made me actually enjoy history. No mean feat!"}]},
+];
+
+let currentFilter='all';
+let selectedTutor=null;
+let selectedDate=0;
+let selectedSlot=null;
+let currentRole='student';
+
+const DATES=['Mon 14','Tue 15','Wed 16','Thu 17','Fri 18'];
+const SLOTS=['9:00 AM','10:00 AM','11:00 AM','12:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
+const TAKEN_SLOTS=[0,3,5];
+
+let requests=[
+  {id:1,student:"Rohit Sharma",subject:"Mathematics",date:"Mon 14",time:"9:00 AM",status:"pending",notes:"Need help with integration techniques for JEE"},
+  {id:2,student:"Anika Gupta",subject:"Physics",date:"Mon 14",time:"11:00 AM",status:"pending",notes:"Optics chapter - lens formula problems"},
+  {id:3,student:"Veer Patel",subject:"Mathematics",date:"Tue 15",time:"3:00 PM",status:"pending",notes:"Statistics and probability for board exams"},
+  {id:4,student:"Simran Kaur",subject:"JEE Prep",date:"Wed 16",time:"10:00 AM",status:"accepted",notes:"Mock test review session"},
+  {id:5,student:"Dev Malhotra",subject:"Mathematics",date:"Thu 17",time:"4:00 PM",status:"declined",notes:"Calculus - limits and continuity"},
+];
+
+let myBookings=[
+  {id:1,tutor:"Dr. Ananya Kapoor",subject:"Mathematics",date:"Mon 14",time:"9:00 AM",status:"accepted"},
+  {id:2,tutor:"Mr. Karan Mehta",subject:"DSA",date:"Tue 15",time:"2:00 PM",status:"pending"},
+];
+
+function setRole(role){
+  currentRole=role;
+  document.getElementById('roleStudent').classList.toggle('active',role==='student');
+  document.getElementById('roleTutor').classList.toggle('active',role==='tutor');
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(p==='home') renderGrid(TUTORS);
+  if(p==='dashboard') renderDashboard();
+  window.scrollTo(0,0);
+}
+
+function filterTutors(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const sub=document.getElementById('subjectFilter').value;
+  let list=TUTORS.filter(t=>{
+    const matchQ=!q||(t.name.toLowerCase().includes(q)||t.subjects.some(s=>s.toLowerCase().includes(q)));
+    const matchSub=!sub||t.subjects.includes(sub);
+    return matchQ&&matchSub;
+  });
+  if(currentFilter==='available') list=list.filter(t=>t.available);
+  if(currentFilter==='top') list=list.filter(t=>t.rating>=4.8);
+  if(currentFilter==='affordable') list=list.filter(t=>t.price<=500);
+  if(currentFilter==='premium') list=list.filter(t=>t.price>=900);
+  renderGrid(list);
+}
+
+function setFilter(btn,f){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=f;
+  filterTutors();
+}
+
+function stars(r){return '★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r))}
+
+function renderGrid(list){
+  const g=document.getElementById('tutorGrid');
+  if(!list.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><p>No tutors found. Try adjusting your search.</p></div>';return}
+  g.innerHTML=list.map(t=>`
+    <div class="tutor-card" onclick="openTutor(${t.id})">
+      ${t.featured?'<div class="badge-featured">Top Tutor</div>':''}
+      <div class="tutor-header">
+        <div class="avatar" style="background:${t.color};color:${t.acolor}">${t.avatar}</div>
+        <div>
+          <div class="tutor-name">${t.name}</div>
+          <div class="tutor-sub">${t.role}</div>
+          <div class="avail-label" style="margin-top:3px"><span class="avail-dot ${t.available?'available':'busy'}"></span>${t.available?'Available now':'Busy today'}</div>
+        </div>
+      </div>
+      <div class="tutor-subjects">${t.subjects.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+      <div class="tutor-meta">
+        <div class="rating"><strong>${t.rating}</strong> ★ · ${t.reviews} reviews</div>
+        <div class="price">₹${t.price} <span>/ hr</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function openTutor(id){
+  selectedTutor=TUTORS.find(t=>t.id===id);
+  const t=selectedTutor;
+  document.getElementById('detailAvatar').style.cssText=`background:${t.color};color:${t.acolor};width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:24px;margin-bottom:1rem;font-family:var(--serif)`;
+  document.getElementById('detailAvatar').textContent=t.avatar;
+  document.getElementById('detailName').textContent=t.name;
+  document.getElementById('detailRole').textContent=t.role;
+  document.getElementById('detailSubjects').innerHTML=t.subjects.map(s=>`<span class="tag">${s}</span>`).join('');
+  document.getElementById('detailStats').innerHTML=`
+    <div class="stat"><span class="stat-val">${t.rating} ★</span><span class="stat-label">Rating</span></div>
+    <div class="stat"><span class="stat-val">${t.reviews}</span><span class="stat-label">Reviews</span></div>
+    <div class="stat"><span class="stat-val">₹${t.price}</span><span class="stat-label">Per hour</span></div>
+    <div class="stat"><span class="stat-val" style="color:${t.available?'#2d6a4f':'#c7521a'}">${t.available?'Now':'Busy'}</span><span class="stat-label">Availability</span></div>`;
+  document.getElementById('detailAbout').textContent=t.about;
+  document.getElementById('detailApproach').textContent=t.approach;
+  document.getElementById('detailReviews').innerHTML=t.studentReviews.map(r=>`<div class="review-item"><div class="review-author">${r.author}</div><div class="review-text">${r.text}</div></div>`).join('');
+  selectedDate=0; selectedSlot=null;
+  renderDateTabs(); renderSlots();
+  // unique referral code
+  document.getElementById('myRefCode').textContent='TC-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  showPage('detail');
+}
+
+function renderDateTabs(){
+  document.getElementById('dateTabs').innerHTML=DATES.map((d,i)=>
+    `<button class="date-tab ${i===selectedDate?'active':''}" onclick="selectDate(${i})">${d}</button>`).join('');
+}
+
+function selectDate(i){selectedDate=i;selectedSlot=null;renderDateTabs();renderSlots()}
+
+function renderSlots(){
+  document.getElementById('timeSlots').innerHTML=SLOTS.map((s,i)=>{
+    const taken=TAKEN_SLOTS.includes(i)&&selectedDate===0;
+    return `<div class="slot ${taken?'taken':''} ${selectedSlot===i&&!taken?'selected':''}" onclick="${taken?'':'selectSlot('+i+')'}">${s}${taken?' ✗':''}</div>`;
+  }).join('');
+}
+
+function selectSlot(i){selectedSlot=i;renderSlots()}
+
+function bookSession(){
+  const name=document.getElementById('bookName').value.trim();
+  const email=document.getElementById('bookEmail').value.trim();
+  if(!name||!email){showToast('Please fill in your name and email');return}
+  if(selectedSlot===null){showToast('Please select a time slot');return}
+  const slot=SLOTS[selectedSlot];
+  const date=DATES[selectedDate];
+  myBookings.push({id:Date.now(),tutor:selectedTutor.name,subject:selectedTutor.subjects[0],date,time:slot,status:'pending'});
+  requests.push({id:Date.now(),student:name,subject:selectedTutor.subjects[0],date,time:slot,status:'pending',notes:document.getElementById('bookNotes').value||'No notes'});
+  showToast('Booking request sent! Awaiting tutor confirmation.');
+  setTimeout(()=>showPage('dashboard'),1200);
+}
+
+function renderDashboard(){
+  const isTutor=currentRole==='tutor';
+  document.getElementById('dashTitle').textContent=isTutor?'Tutor Dashboard':'My Sessions';
+  document.getElementById('dashSub').textContent=isTutor?'Manage incoming requests and your schedule':'Track your bookings and upcoming sessions';
+  document.getElementById('tutorMetrics').style.display=isTutor?'grid':'none';
+  document.getElementById('requestsTitle').textContent=isTutor?'Incoming requests':'My booking requests';
+
+  const showRequests=isTutor?requests:myBookings;
+  const pending=showRequests.filter(r=>r.status==='pending');
+  document.getElementById('requestCount').textContent=`${pending.length} pending`;
+
+  const rl=document.getElementById('requestsList');
+  if(!showRequests.length){rl.innerHTML='<div class="empty-state"><p>No requests yet.</p></div>';} 
+  else{
+    rl.innerHTML=showRequests.filter(r=>r.status==='pending'||r.status==='declined').map(r=>isTutor?`
+      <div class="request-card" id="req-${r.id}">
+        <div class="avatar" style="background:#f0ede8;color:#7a7670;font-size:14px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600">${r.student.split(' ').map(w=>w[0]).join('')}</div>
+        <div class="req-info">
+          <div class="req-student">${r.student}</div>
+          <div class="req-meta">${r.notes}</div>
+        </div>
+        <span class="req-subject">${r.subject}</span>
+        <span class="req-time">📅 ${r.date} · ${r.time}</span>
+        ${r.status==='pending'?`<div class="req-actions"><button class="btn-accept" onclick="respond(${r.id},'accepted')">Accept</button><button class="btn-decline" onclick="respond(${r.id},'declined')">Decline</button></div>`:`<span class="status-badge ${r.status}">${r.status}</span>`}
+      </div>`:`
+      <div class="request-card">
+        <div class="req-info">
+          <div class="req-student">${r.tutor}</div>
+          <div class="req-meta">${r.subject} · ${r.date} · ${r.time}</div>
+        </div>
+        <span class="status-badge ${r.status}">${r.status}</span>
+      </div>`).join('');
+  }
+
+  const ul=document.getElementById('upcomingList');
+  const accepted=isTutor?requests.filter(r=>r.status==='accepted'):myBookings.filter(r=>r.status==='accepted');
+  if(!accepted.length){ul.innerHTML='<div class="empty-state"><p>No confirmed sessions yet.</p></div>';}
+  else{
+    ul.innerHTML=accepted.map(r=>`
+      <div class="request-card">
+        ${isTutor?`<div class="avatar" style="background:#e8f5ee;color:#2d6a4f;font-size:13px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600">${r.student.split(' ').map(w=>w[0]).join('')}</div>`:''}
+        <div class="req-info">
+          <div class="req-student">${isTutor?r.student:r.tutor}</div>
+          <div class="req-meta">${r.subject}${r.notes?' · '+r.notes:''}</div>
+        </div>
+        <span class="req-subject" style="background:#e8f5ee;color:#2d6a4f">${r.date}</span>
+        <span class="req-time">🕐 ${r.time}</span>
+        <span class="status-badge accepted">Confirmed</span>
+      </div>`).join('');
+  }
+
+  renderCalendar();
+}
+
+function respond(id,status){
+  const r=requests.find(x=>x.id===id);
+  if(r){r.status=status;}
+  showToast(status==='accepted'?'Session accepted! Student will be notified.':'Session declined.');
+  renderDashboard();
+}
+
+function renderCalendar(){
+  const g=document.getElementById('calGrid');
+  const sessionDays=[2,5,7,9,12,14,15,18,21];
+  g.innerHTML=Array.from({length:28},(_,i)=>{
+    const day=i+1;
+    const has=sessionDays.includes(day);
+    const today=day===13;
+    return `<div class="cal-day ${has?'has-session':''} ${today?'today':''}" title="${has?'Session scheduled':''}">
+      <div style="font-size:11px">${day}</div>
+      ${has?'<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);margin:2px auto 0"></div>':''}
+    </div>`;
+  }).join('');
+}
+
+function copyRef(){
+  const code=document.getElementById('myRefCode').textContent;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  showToast('Referral code copied! Share it with friends.');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// init
+renderGrid(TUTORS);
+</script>
+</body>
+</html>
